@@ -1,0 +1,86 @@
+﻿
+@{
+    ViewData["Title"] = "GetList";
+}
+
+<h2>GetList</h2>
+<div class="alert-success">@TempData["message"]</div>
+<input type="checkbox" id="check-all" />
+<span>Check all</span>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Handle</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+
+            <tr>
+                <td><input type="checkbox" id="check-id-@product.Id" /></td>
+                <td>@product.Name</td>
+                <td>@product.Price</td>
+                <td>
+                    <a href="/Product/Update?id=@product.Id">Edit</a>
+                    <a href="#" id="@product.Id" class="btn-delete">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<button  id="delete-all">Delete All</button>
+<script>
+    var listBtnDelete = document.getElementsByClassName("btn-delete");
+    for (var i = 0; i < listBtnDelete.length; i++) {
+        listBtnDelete[i].onclick = function () {
+            if (confirm("Are you sure ?")) {
+                var currentDeleteButton = this;
+                var deleteId = this.id;
+                var xmlHttpRequest = new XMLHttpRequest();
+                xmlHttpRequest.onreadystatechange = function () {
+                    if (this.readyState === 4 && this.status === 200) {
+                        alert("Delete success");
+                        currentDeleteButton.parentElement.remove();
+                    }
+                }
+                xmlHttpRequest.open("DELETE", "/Product/Delete?id=" + deleteId, true);
+                xmlHttpRequest.send();
+            }
+        };
+    }
+
+        var checkAll = document.getElementById("check-all");
+        var listCheckBox = document.getElementsByClassName("check-Item");
+        checkAll.onclick = function () {
+            for (var i = 0; i < listCheckBox.length; i++) {
+                listCheckBox[i].checked = this.checked;
+            }
+        }
+        var deleteAll = document.getElementById("delete-all");
+        deleteAll.onclick = function () {
+            var checkedItems = document.querySelectorAll(".check-item:checked");
+            var deleteIds = new Array();
+            for (var i = 0; i < checkedItems.length; i++) {
+                deleteIds.push(checkedItems[i].id.replace("check-id", ""));
+            }
+            Console.log(deleteIds);
+            if (deleteIds.length === 0) {
+                alert("Please choose at least 1 item");
+                return;
+            }
+            //ajax
+            var xmlHttpRequest = new XMLHttpRequest();
+            xmlHttpRequest.onreadystatechange = function () {
+                if (this.readyState == && this.status === 200) {
+                    alert("Delete success");
+                }
+            }
+            xamlHttpRequest.open("DELETE", "Product/DeleteMany?id=" + deleteIds, true);
+        }
+    }
+
+</script>
+
